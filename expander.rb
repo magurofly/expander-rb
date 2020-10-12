@@ -32,7 +32,7 @@ def expand_file(source, base_dir = '.')
   source.gsub(PATTERN_REQUIRE) do |matched|
     matched = PATTERN_REQUIRE.match(matched)
     if (name = require_dep(matched[:content], matched[:relative], base_dir))
-      name
+      'require_' + name
     else
       matched
     end
@@ -41,14 +41,14 @@ end
 
 def require_dep(feature, relative, base_dir)
   return @deps[feature].name if @deps.key? feature
-  name = 'require_' + feature.gsub(/[^\w]/, '_')[0, 64] + SecureRandom.hex(8)
+  name = SecureRandom.hex(8)
   if (path = search_feature(feature, relative, base_dir))
     source_body = expand_file(File.read(path), File.dirname(path))
     source = <<-EOF
-def #{name}
-  return false if $".include? '#{path}'
-  $" << '#{path}'
-  eval <<__END__
+def require_#{name}
+  return false if $".include? '#{name}.rb'
+  $" << '#{name}.rb'
+  eval <<-__END__
 #{source_body}
 __END__
   true
@@ -66,9 +66,9 @@ def search_feature(feature, is_path, base_dir)
 
   if is_path
     feature = File.join(base_dir, feature)
-    if File.exist? feature
+    if File.file? feature
       return feature
-    elsif File.exist? feature + '.rb'
+    elsif File.file? feature + '.rb'
       return feature + '.rb'
     else
       return false
