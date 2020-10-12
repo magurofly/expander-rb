@@ -46,11 +46,12 @@ def require_dep(feature, relative, base_dir)
     source_body = expand_file(File.read(path), File.dirname(path))
     source = <<-EOF
 def #{name}
-  return if $_#{name}
-  $_#{name} = true
-  Kernel.module_eval <<__END__
+  return false if $".include? '#{path}'
+  $" << '#{path}'
+  eval <<__END__
 #{source_body}
 __END__
+  true
 end
     EOF
     @deps[feature] = Dep[name, source]
