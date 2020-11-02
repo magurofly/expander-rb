@@ -9,3 +9,29 @@
 4. `$ ruby expander.rb -I ac-library-rb/lib スクリプトのファイル名` で展開、すかさず全部コピペして提出です！
 
 なお、 `-o 出力ファイル名` オプションをつけると標準出力ではなくファイルに出力できます。
+
+# クリップボードにコピーする
+
+クリップボードにコピーするコマンドを利用すると便利です。
+
+## Linux
+`xsel` をインストールしてください。
+
+```sh
+$ sudo apt install xsel
+$ ruby expander.rb -I ac-library-rb/lib ファイル名 | xsel -bi
+```
+
+## Mac
+`pbcopy` をつかいます。
+
+```sh
+$ ruby expander.rb -I ac-library-rb/lib ファイル名 | pbcopy
+```
+
+## Windows
+`clip` をつかいます。
+
+```cmd
+ruby expander.rb -I ac-library-rb/lib ファイル名 | clip
+```
